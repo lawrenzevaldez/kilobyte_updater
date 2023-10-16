@@ -12,8 +12,9 @@ class Product extends Model {
                         .from('online_shop_products')
                         // .whereIn('ProductID', ['85381', '85377', '85374', '85372'])
                         // .where('ProductID', '=', 62559)
+                        .where('excluded_auto', 0)
                         .orderBy('ProductID', 'asc')
-                        // .limit(5)
+                        .limit(100)
                         // .where('concessionaire', 1)
             await Db.close()
             return (row.length == 0) ? '' : row
@@ -193,6 +194,35 @@ class Product extends Model {
             await trx.commit()
         } catch(error) {
             await trx.rollback()
+            console.log(error)
+        }
+    }
+
+    async save_payload(payload) {
+        const trx = await Db.beginTransaction()
+        try {
+            let data = {
+                payload: payload,
+                date_added: moment().format('YYYY-MM-DD HH:MM:ss')
+            }
+        
+            let res = await trx.insert(data).into('online_shop_products_payload')
+            await trx.commit()
+            return (res == 0) ? false : true
+        } catch(e) {
+            await trx.rollback
+            console.log(e)
+        }
+    }
+
+    async fetch_payload() {
+        try {
+            let row = await Db.select('*')
+                            .from('online_shop_products_payload')
+                            .where('status', 0)
+            await Db.close()
+            return (row.length == 0) ? '' : row
+        } catch (error) {
             console.log(error)
         }
     }

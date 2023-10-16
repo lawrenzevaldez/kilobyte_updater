@@ -13,7 +13,7 @@ class PriceStockUpdate extends Task {
     try {
       console.log("START UPDATING")
       let Controller = new WooCommerceApiController
-      await Controller.updatePrice()
+      // await Controller.updatePrice()
       console.log("---END---")
     } catch(e) {
       console.log(e)
