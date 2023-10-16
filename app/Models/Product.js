@@ -12,7 +12,7 @@ class Product extends Model {
                         .from('online_shop_products')
                         // .whereIn('ProductID', ['85381', '85377', '85374', '85372'])
                         // .where('ProductID', '=', 62559)
-                        .where('excluded_auto', 0)
+                        .where('excluded_auto', '=', 0)
                         .orderBy('ProductID', 'asc')
                         .limit(100)
                         // .where('concessionaire', 1)
@@ -203,7 +203,7 @@ class Product extends Model {
         try {
             let data = {
                 payload: payload,
-                date_added: moment().format('YYYY-MM-DD HH:MM:ss')
+                date_added: Db.fn.now()
             }
         
             let res = await trx.insert(data).into('online_shop_products_payload')
