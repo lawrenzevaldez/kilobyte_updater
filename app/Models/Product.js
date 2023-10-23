@@ -14,7 +14,7 @@ class Product extends Model {
                         // .where('ProductID', '=', 62559)
                         .where('excluded_auto', '=', 0)
                         .orderBy('ProductID', 'asc')
-                        .limit(100)
+                        // .limit(100)
                         // .where('concessionaire', 1)
             await Db.close()
             return (row.length == 0) ? '' : row
