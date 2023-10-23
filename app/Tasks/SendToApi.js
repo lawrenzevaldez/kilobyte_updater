@@ -13,7 +13,7 @@ class SendToApi extends Task {
     try {
       console.log("START SENDING TO API")
       let Controller = new WooCommerceApiController
-      // await Controller.sendtoapi()
+      await Controller.sendtoapi()
       console.log("---END---")
     } catch(e) {
       console.log(e)
