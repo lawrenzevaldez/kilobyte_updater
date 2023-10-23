@@ -69,58 +69,68 @@ class WooCommerceApiController {
 
     async updatePrice() {
         try {
-            // let pageRes = await ProductMod.getOnlineProducts()
-            // if(pageRes == '') return true
-            // let all_products = []
-            // for(let i = 0; i < pageRes.length; i+=100) {
-            //     let temp_products = []
-            //     console.time("get-100")
-            //     for(let j = i; j < i + 100 && j < pageRes.length; j++) {
-            //         let prodDetails
-            //         if(pageRes[j].by_barcode == 'Y' || pageRes[j].by_barcode == 'Yes' || pageRes[j].by_barcode == 'yes' || pageRes[j].by_barcode == 'y') {
-            //             prodDetails = await ProductMod.getStockPriceBarcode(pageRes[j].GlobaljD, pageRes[i].Barcode)
-            //         } else {
-            //             prodDetails = await ProductMod.getStockPrice(pageRes[j].GlobalID, pageRes[j].Barcode)
-            //         }
-            //         if(prodDetails == '') continue
-            //         let currentlySold = 0
-            //         let itemPrice = prodDetails.srp
+            let pageRes = await ProductMod.getOnlineProducts()
+            if(pageRes == '') return true
+            let all_products = []
+            for(let i = 0; i < pageRes.length; i+=100) {
+                let temp_products = []
+                console.time("get-100")
+                for(let j = i; j < i + 100 && j < pageRes.length; j++) {
+                    let prodDetails
+                    if(pageRes[j].by_barcode == 'Y' || pageRes[j].by_barcode == 'Yes' || pageRes[j].by_barcode == 'yes' || pageRes[j].by_barcode == 'y') {
+                        prodDetails = await ProductMod.getStockPriceBarcode(pageRes[j].GlobaljD, pageRes[i].Barcode)
+                    } else {
+                        prodDetails = await ProductMod.getStockPrice(pageRes[j].GlobalID, pageRes[j].Barcode)
+                    }
+                    if(prodDetails == '') continue
+                    let currentlySold = 0
+                    let itemPrice = prodDetails.srp
 
-            //         let getPercentage = parseFloat(pageRes[j].percentage/100).toFixed(2)
-            //         let getPricePercentage = parseFloat(itemPrice*getPercentage).toFixed(2)
-            //         let fitemPrice = parseFloat(parseFloat(itemPrice)+parseFloat(getPricePercentage)).toFixed(2)
-            //         let stocks = parseFloat(prodDetails.SellingArea - currentlySold)
+                    let getPercentage = parseFloat(pageRes[j].percentage/100).toFixed(2)
+                    let getPricePercentage = parseFloat(itemPrice*getPercentage).toFixed(2)
+                    let fitemPrice = parseFloat(parseFloat(itemPrice)+parseFloat(getPricePercentage)).toFixed(2)
+                    let stocks = parseFloat(prodDetails.SellingArea - currentlySold)
 
-            //         temp_products.push({
-            //             id: pageRes[j].ProductID,
-            //             regular_price: fitemPrice,
-            //             price: fitemPrice,
-            //             manage_stock: (pageRes[j].concessionaire == 1) ? false : true,
-            //             stock_quantity: stocks,
-            //             stock_status: (stocks > 0) ? 'instock' : 'outofstock'                        
-            //         })
-            //     }
-            //     all_products.push({ update: temp_products })
-            //     await ProductMod.save_payload(JSON.stringify(all_products))
-            //     console.timeEnd("get-100")
-            //     // // // NEW METHOD FOR UPDATE OF STOCK AND PRICE
-            //     // let res = await ProductMod.updateProductDetailsOnline(pageRes[i].ProductID, stocks, fitemPrice, pageRes[i].concessionaire)
-            //     // if(res) {
-            //     //     // await UserMaintenanceMod.audit_trail(0, 'AUTO UPDATE', 'PRODUCT', `UPDATE THE STOCK AND PRICE OF PRODUCT SKU ${pageRes[i].GlobalID} & NAME ${pageRes[i].productName.toUpperCase()}`)
-            //     //     console.log('UPDATING STOCK AND PRICE: ' + pageRes[i].GlobalID)
-            //     //     await ProductMod.updateOnlineProducts(pageRes[i].ProductID)
-            //     // }
-            //     // // ./NEW METHOD FOR UPDATE OF STOCK AND PRICE
-            // }
+                    temp_products.push({
+                        id: pageRes[j].ProductID,
+                        regular_price: fitemPrice,
+                        price: fitemPrice,
+                        manage_stock: (pageRes[j].concessionaire == 1) ? false : true,
+                        stock_quantity: stocks,
+                        stock_status: (stocks > 0) ? 'instock' : 'outofstock'                        
+                    })
+                }
+                all_products.push({ update: temp_products })
+                await ProductMod.save_payload(JSON.stringify(all_products))
+                console.timeEnd("get-100")
+                // // // NEW METHOD FOR UPDATE OF STOCK AND PRICE
+                // let res = await ProductMod.updateProductDetailsOnline(pageRes[i].ProductID, stocks, fitemPrice, pageRes[i].concessionaire)
+                // if(res) {
+                //     // await UserMaintenanceMod.audit_trail(0, 'AUTO UPDATE', 'PRODUCT', `UPDATE THE STOCK AND PRICE OF PRODUCT SKU ${pageRes[i].GlobalID} & NAME ${pageRes[i].productName.toUpperCase()}`)
+                //     console.log('UPDATING STOCK AND PRICE: ' + pageRes[i].GlobalID)
+                //     await ProductMod.updateOnlineProducts(pageRes[i].ProductID)
+                // }
+                // // ./NEW METHOD FOR UPDATE OF STOCK AND PRICE
+            }
+            return true
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    async sendtoapi() {
+        try {
             let fetch = await ProductMod.fetch_payload()
             console.time("start-update")
             for(const row of fetch) {
                 let payload = JSON.parse(row.payload)
                 let fPayload = payload[0]
                 let res = await this.WooCommerce.put("products/batch", fPayload)
+                if(res.status == 200) {
+                    await ProductMod.updateProductsPayload(row.id)
+                }
             }
             console.timeEnd("start-update")
-            return true
         } catch(error) {
             console.log(error)
         }

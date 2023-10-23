@@ -4,16 +4,16 @@ const WooCommerceApiController = require("../Controllers/Http/WooCommerceApiCont
 
 const Task = use('Task')
 
-class PriceStockUpdate extends Task {
+class SendToApi extends Task {
   static get schedule () {
-    return '0 */24 * * * *'
+    return '0 */55 * * * *'
   }
 
   async handle () {
     try {
-      console.log("START UPDATING")
+      console.log("START SENDING TO API")
       let Controller = new WooCommerceApiController
-      // await Controller.updatePrice()
+      // await Controller.sendtoapi()
       console.log("---END---")
     } catch(e) {
       console.log(e)
@@ -21,4 +21,4 @@ class PriceStockUpdate extends Task {
   }
 }
 
-module.exports = PriceStockUpdate
+module.exports = SendToApi

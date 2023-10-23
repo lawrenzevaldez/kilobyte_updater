@@ -24,4 +24,5 @@ Route.get('/', () => {
 Route.group(() => {
     Route.get('/updateStockPrice', 'WooCommerceApiController.updateStockPrice')
     Route.get('/updatePrice', 'WooCommerceApiController.updatePrice')
+    Route.get('/sendtoapi', 'WooCommerceApiController.sendtoapi')
 }).prefix('api')
