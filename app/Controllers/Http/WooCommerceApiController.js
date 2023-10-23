@@ -71,8 +71,8 @@ class WooCommerceApiController {
         try {
             let pageRes = await ProductMod.getOnlineProducts()
             if(pageRes == '') return true
-            let all_products = []
             for(let i = 0; i < pageRes.length; i+=100) {
+                let all_products = []
                 let temp_products = []
                 console.time("get-100")
                 for(let j = i; j < i + 100 && j < pageRes.length; j++) {
