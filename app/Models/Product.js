@@ -228,19 +228,15 @@ class Product extends Model {
     }
 
     async updateProductsPayload(id) {
-        const trx = await Db.beginTransaction()
         try {
             let data = {
                 status: 1
             }
-            await trx
-            .table('online_shop_products_payload')
+            await Db.table('online_shop_products_payload')
             .update(data)
             .where('id', id)
 
-            await trx.commit()
         } catch(error) {
-            await trx.rollback()
             console.log(error)
         }
     }
